@@ -9,24 +9,26 @@ import { List } from './entities/list.entity';
 @Injectable()
 export class ListsService {
   constructor(
-    @Inject('ListGatewayInterface')
-    private listGateway: ListGatewayInterface,
-    private httpService: HttpService,
+    @Inject('ListPersistenceGateway')
+    private listPersistenceGateway: ListGatewayInterface,
+    @Inject('ListIntegrationGateway')
+    private listIntegrationGateway: ListGatewayInterface,
+    // private httpService: HttpService,
   ) {}
 
   async create(createListDto: CreateListDto) {
     const list = new List(createListDto.name);
-    await this.listGateway.create(list);
-    await lastValueFrom(this.httpService.post('/lists', { name: list.name }));
+    await this.listPersistenceGateway.create(list);
+    await this.listIntegrationGateway.create(list);
     return list;
   }
 
   findAll() {
-    return this.listGateway.findAll();
+    return this.listPersistenceGateway.findAll();
   }
 
   async findOne(id: number) {
-    const list = await this.listGateway.findByid(id);
+    const list = await this.listPersistenceGateway.findByid(id);
     if (!list) {
       throw new Error('List not found');
     }

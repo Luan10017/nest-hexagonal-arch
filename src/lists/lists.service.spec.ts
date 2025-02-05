@@ -9,15 +9,18 @@ const mockHttpService = {
 
 describe('ListsService', () => {
   let service: ListsService;
-  let listGateway: ListGatewayInMemory;
+  let listPersistenceGateway: ListGatewayInMemory;
+  let listIntegrationGateway: ListGatewayInMemory;
   beforeEach(() => {
-    listGateway = new ListGatewayInMemory();
-    service = new ListsService(listGateway, mockHttpService as any);
+    listPersistenceGateway = new ListGatewayInMemory();
+    listIntegrationGateway = new ListGatewayInMemory();
+    service = new ListsService(listPersistenceGateway, listIntegrationGateway);
   });
 
   it('deve criar uma lista', async () => {
     const list = await service.create({ name: 'Lista de compras' });
-    expect(listGateway.items).toEqual([list]);
+    expect(listPersistenceGateway.items).toEqual([list]);
+    expect(listIntegrationGateway.items).toEqual([list]);
   });
   // let service: ListsService;
   // beforeEach(async () => {
